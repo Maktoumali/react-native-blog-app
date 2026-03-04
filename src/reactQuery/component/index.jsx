@@ -5,10 +5,11 @@ import {
   FlatList,
   StyleSheet,
   Image,
-  ActivityIndicator,
+  // ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { ActivityIndicator } from "react-native-paper";
 
 const ProductListing = () => {
   const getProducts = async () => {
@@ -24,7 +25,7 @@ const ProductListing = () => {
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="small" animating={true} color="#21005d"/>
       </View>
     );
   }
@@ -74,9 +75,9 @@ export default ProductListing;
 
 const styles = StyleSheet.create({
   loaderContainer: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: 20,
   },
 
   card: {
