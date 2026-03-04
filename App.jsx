@@ -10,11 +10,20 @@ import CreateBlog from './src/reactQuery/PostRequest';
 import Login from './src/LoginPage';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import BlogDetails from './src/blogDetails';
+import NavBar from './src/NavBar';
+import {PaperProvider} from 'react-native-paper';
+import Registration from './src/registrationPage';
+import {useEffect} from 'react';
+import SplashScreen from 'react-native-splash-screen';
 
 function App() {
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator();
   const queryClient = new QueryClient();
+
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
 
   function blogStack() {
     return (
@@ -35,6 +44,7 @@ function App() {
           headerShown: false,
           tabBarActiveTintColor: 'blue',
           // tabBarActiveBackgroundColor:'green',
+          // tabBarBackground:'red',
           tabBarIcon: () => {
             let iconName;
 
@@ -61,19 +71,28 @@ function App() {
       </Tab.Navigator>
     );
   }
+
+  function MainApp() {
+    return (
+      <NavBar>
+        <MyTabs />
+      </NavBar>
+    );
+  }
+
   return (
-    <>
-      {' '}
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <PaperProvider>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{headerShown: false}}>
             <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="MainApp" component={MyTabs} />
+            <Stack.Screen name="register" component={Registration} />
+            <Stack.Screen name="MainApp" component={MainApp} />
           </Stack.Navigator>
           {/* <MyTabs/> */}
         </NavigationContainer>
-      </QueryClientProvider>
-    </>
+      </PaperProvider>
+    </QueryClientProvider>
   );
 }
 

@@ -11,12 +11,14 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../api/axiosIntance';
 import Fontisto from '@react-native-vector-icons/fontisto';
+import {useNavigation} from '@react-navigation/native';
 
 const Login = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigation();
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -26,13 +28,13 @@ const Login = ({navigation}) => {
 
     try {
       setLoading(true);
-      
+
       const response = await api.post('/users/login', {
         username,
         password,
       });
-      console.log("try function is working")
-      console.log(response,"api response")
+      console.log('try function is working');
+      console.log(response, 'api response');
       const {access_token} = response.data;
 
       // ✅ Store token
@@ -89,7 +91,9 @@ const Login = ({navigation}) => {
         </TouchableOpacity>
 
         <TouchableOpacity>
-          <Text style={styles.registerText}>
+          <Text
+            style={styles.registerText}
+            onPress={() => navigate.navigate('register')}>
             Don’t have an account? Register Now
           </Text>
         </TouchableOpacity>
@@ -103,14 +107,14 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#6C63FF',
+    backgroundColor: 'white',
     justifyContent: 'center',
     padding: 20,
   },
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#21005d',
     textAlign: 'center',
   },
   subtitle: {
@@ -132,7 +136,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   button: {
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#21005d',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -155,7 +159,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 15,
     paddingRight: 15,
-    height:47,
+    height: 47,
   },
   passwordInput: {
     flex: 1,

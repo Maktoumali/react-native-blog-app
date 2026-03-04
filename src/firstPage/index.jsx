@@ -3,12 +3,14 @@ import {
   StyleSheet,
   Text,
   View,
-  ActivityIndicator,
+  // ActivityIndicator,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import {useQuery} from '@tanstack/react-query';
 import api from '../api/axiosIntance';
 import {useNavigation} from '@react-navigation/native';
+import {ActivityIndicator, Avatar} from 'react-native-paper';
 
 const fetchBlogs = async () => {
   const response = await api.get('/blogs/list');
@@ -22,20 +24,37 @@ const formatDate = dateString => {
 
 const Item = ({blog, onPress}) => (
   <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
-    <View style={styles.card}>
-      <Text style={styles.title}>{blog.title}</Text>
+    <View style={styles.mainCardContainer}>
+      <View style={styles.authorImagContainer}>
+        <View style={styles}>
+          <Avatar.Image
+            size={40}
+            source={{
+              uri: `http://192.168.1.66:8000/${blog.author.profile_photo}`,
+            }}
+          />
+        </View>
+        <View></View>
+        <View></View>
+      </View>
+      {blog.images?.length > 0 && (
+        <Image
+          source={{uri: `http://192.168.1.66:8000${blog.images[0].url}`}} // ✅ object + no extra /
+          style={styles.blogImage} // ✅ Image must have a size or it won't show
+          resizeMode="cover"
+        />
+      )}
+      <View style={styles.card}>
+        <Text style={styles.title}>{blog.title}</Text>
 
-      <Text style={styles.content}>{blog.content}</Text>
+        <Text style={styles.content}>{blog.content}</Text>
 
-      <View style={styles.divider} />
+        <View style={styles.divider} />
 
-      <Text style={styles.meta}>
-        ✍ Author: <Text style={styles.bold}>{blog.author.username}</Text>
-      </Text>
-
-      <Text style={styles.meta}>📅 Created: {formatDate(blog.created_at)}</Text>
-
-      <Text style={styles.meta}>🔄 Updated: {formatDate(blog.updated_at)}</Text>
+        <Text style={styles.meta}>
+          ✍ Author: <Text style={styles.bold}>{blog.author.username}</Text>
+        </Text>
+      </View>
     </View>
   </TouchableOpacity>
 );
@@ -44,6 +63,7 @@ const FirstPage = () => {
   const {data, isLoading, isError, error, refetch, isFetching} = useQuery({
     queryKey: ['blogs'],
     queryFn: fetchBlogs,
+    staleTime: 5 * 60 * 1000,
   });
   const navigation = useNavigation();
   console.log('data', data);
@@ -51,7 +71,7 @@ const FirstPage = () => {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#6C63FF" />
+        <ActivityIndicator animating={true} size="small" color="#21005d" />
       </View>
     );
   }
@@ -67,7 +87,7 @@ const FirstPage = () => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={data}
+        data={data?.items}
         renderItem={({item}) => (
           <Item
             blog={item}
@@ -85,6 +105,23 @@ const FirstPage = () => {
 };
 
 const styles = StyleSheet.create({
+  mainCardContainer:{
+    width:'100%',
+    backgroundColor:'#FAF9F6',
+    marginBottom:8,
+  },
+  authorImagContainer: {
+    width: '100%',
+    // backgroundColor: 'black',
+    height:50,
+    display:'flex',
+    justifyContent:'center',
+    paddingLeft:10,
+    
+  },
+  avatarContainer: {
+    width: '20%',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F4F6FA',
@@ -92,7 +129,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#ffffff',
     padding: 18,
-    borderRadius: 14,
+    // borderRadius: 14,
     marginBottom: 18,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 5},
@@ -105,6 +142,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 10,
+  },
+  blogImage: {
+    width: '100%',
+    height: 320,
+    // borderRadius: 14,
+    marginBottom: 0, // card sits right below it
   },
   content: {
     fontSize: 15,
@@ -126,9 +169,9 @@ const styles = StyleSheet.create({
     color: '#444',
   },
   center: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
   },
 });
 
