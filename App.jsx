@@ -15,11 +15,13 @@ import {PaperProvider} from 'react-native-paper';
 import Registration from './src/registrationPage';
 import {useEffect} from 'react';
 import SplashScreen from 'react-native-splash-screen';
+import useInternetListener from './src/utils/InternetCheck';
 
 function App() {
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator();
   const queryClient = new QueryClient();
+  useInternetListener();
 
   useEffect(() => {
     SplashScreen.hide();
