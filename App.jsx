@@ -11,11 +11,11 @@ import Login from './src/LoginPage';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import BlogDetails from './src/blogDetails';
 import NavBar from './src/NavBar';
-import {PaperProvider} from 'react-native-paper';
 import Registration from './src/registrationPage';
 import {useEffect} from 'react';
 import SplashScreen from 'react-native-splash-screen';
 import useInternetListener from './src/utils/InternetCheck';
+import {PaperProvider, MD3LightTheme} from 'react-native-paper';
 
 function App() {
   const Tab = createBottomTabNavigator();
@@ -75,14 +75,22 @@ function App() {
   }
 
   function MainApp() {
-    return (
-        <MyTabs />
-    );
+    return <MyTabs />;
   }
+
+  const theme = {
+    ...MD3LightTheme,
+    colors: {
+      ...MD3LightTheme.colors,
+      primary: '#21005d', // main color
+      secondary: '#03DAC6',
+      background: '#FFFFFF',
+    },
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
-      <PaperProvider>
+      <PaperProvider theme={theme}>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{headerShown: false}}>
             <Stack.Screen name="Login" component={Login} />

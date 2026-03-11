@@ -1,52 +1,48 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator,
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../api/axiosIntance';
-import Fontisto from '@react-native-vector-icons/fontisto';
 import {useNavigation} from '@react-navigation/native';
+import {useForm, Controller} from 'react-hook-form';
+import {useMutation} from '@tanstack/react-query';
+import {Button, TextInput} from 'react-native-paper';
 
 const Login = ({navigation}) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigation();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: {errors},
+  } = useForm();
 
-  const handleLogin = async () => {
-    if (!username || !password) {
-      Alert.alert('Error', 'Please enter username and password');
-      return;
-    }
+  const loginMutation = useMutation({
+    mutationFn: async data => {
+      const response = await api.post('/users/login', data);
+      return response.data;
+    },
 
-    try {
-      setLoading(true);
+    onSuccess: async data => {
+      const {access_token} = data;
 
-      const response = await api.post('/users/login', {
-        username,
-        password,
-      });
-      console.log('try function is working');
-      console.log(response, 'api response');
-      const {access_token} = response.data;
-
-      // ✅ Store token
       await AsyncStorage.setItem('access_token', access_token);
 
-      // ✅ Navigate to Main App (Tabs)
       navigation.replace('MainApp');
-    } catch (error) {
+    },
+
+    onError: () => {
       Alert.alert('Login Failed', 'Invalid credentials');
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const handleLogin = formData => {
+    loginMutation.mutate(formData);
   };
 
   return (
@@ -55,41 +51,58 @@ const Login = ({navigation}) => {
       <Text style={styles.subtitle}>Login to continue</Text>
 
       <View style={styles.card}>
-        
-        <TextInput
-          placeholder="Username"
-          style={styles.input}
-          value={username}
-          onChangeText={setUsername}
-        />
-
-        <View style={styles.passwordContainer}>
-          <TextInput
-            placeholder="Password"
-            secureTextEntry={!showPassword}
-            style={styles.passwordInput}
-            value={password}
-            onChangeText={setPassword}
-          />
-
-          <TouchableOpacity
-            onPress={() => setShowPassword(!showPassword)}
-            style={styles.eyeIcon}>
-            <Fontisto
-              name={showPassword ? 'eye-blocked' : 'eye'}
-              size={20}
-              color="gray"
+        <Controller
+          name="username"
+          control={control}
+          rules={{
+            required: 'Please enter the username',
+            validate: value =>
+              /[A-Z]/.test(value) ||
+              'Username must contain at least one capital letter',
+          }}
+          render={({field: {onChange, value}}) => (
+            <TextInput
+              label="Username"
+              value={value}
+              onChangeText={onChange}
+              ColorValue="#21005d"
+              style={styles.input}
+              underlineColor="transparent"
             />
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text style={styles.buttonText}>Login</Text>
           )}
-        </TouchableOpacity>
+        />
+        {errors.username && (
+          <Text style={styles.errorMessage}>{errors.username.message}</Text>
+        )}
+        <Controller
+          name="password"
+          control={control}
+          rules={{
+            required: 'please enter the password',
+          }}
+          render={({field: {onChange, value}}) => (
+            <TextInput
+              label="Password"
+              onChangeText={onChange}
+              value={value}
+              style={styles.passwordInput}
+              underlineColor="transparent"
+              secureTextEntry
+              right={<TextInput.Icon icon="eye" />}
+            />
+          )}
+        />
+        {errors.password && (
+          <Text style={styles.errorMessage}>{errors.password.message}</Text>
+        )}
+    
+        <Button
+          onPress={handleSubmit(handleLogin)}
+          textColor="white"
+          style={styles.button}
+          loading={loginMutation.isPending}>
+          Login
+        </Button>
 
         <TouchableOpacity>
           <Text
@@ -131,17 +144,16 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#F2F2F2',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 15,
-    color: 'black',
+    marginTop: 15,
+  },
+  passwordInput: {
+    backgroundColor: '#F2F2F2',
+    marginTop: 15,
+    // marginBottom: 20,
   },
   button: {
     backgroundColor: '#21005d',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
+    marginTop:20,
   },
   buttonText: {
     color: 'white',
@@ -153,21 +165,10 @@ const styles = StyleSheet.create({
     color: '#6C63FF',
     fontWeight: '600',
   },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F2F2F2',
-    borderRadius: 10,
-    marginBottom: 15,
-    paddingRight: 15,
-    height: 47,
-  },
-  passwordInput: {
-    flex: 1,
-    padding: 15,
-    color: 'black',
-  },
   eyeIcon: {
     padding: 5,
+  },
+  errorMessage: {
+    color: 'red',
   },
 });

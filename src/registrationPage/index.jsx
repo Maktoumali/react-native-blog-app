@@ -8,7 +8,11 @@ import api from '../api/axiosIntance';
 import Header from '../NavBar';
 
 const Registration = () => {
-  const {control, handleSubmit} = useForm();
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm();
   const [image, setImage] = useState(null);
 
   // ✅ React Query Mutation
@@ -68,7 +72,7 @@ const Registration = () => {
         <Controller
           control={control}
           name="username"
-          rules={{required: true}}
+          rules={{required: "please enter the username"}}
           render={({field: {onChange, value}}) => (
             <TextInput
               label="Username"
@@ -80,7 +84,9 @@ const Registration = () => {
             />
           )}
         />
-
+        {errors.username && (
+          <Text style={styles.errorText}>{errors.username.message}</Text>
+        )}
         {/* Email */}
         <Controller
           control={control}
@@ -102,12 +108,14 @@ const Registration = () => {
             />
           )}
         />
-
+        {errors.email && (
+          <Text style={styles.errorText}>{errors.email.message}</Text>
+        )}
         {/* Password */}
         <Controller
           control={control}
           name="password"
-          rules={{required: true}}
+          rules={{required: "please enter the password"}}
           render={({field: {onChange, value}}) => (
             <TextInput
               label="Password"
@@ -120,6 +128,9 @@ const Registration = () => {
             />
           )}
         />
+        {errors.password && (
+          <Text style={styles.errorText}>{errors.password.message}</Text>
+        )}
 
         {/* Upload Button */}
         <Button
@@ -162,11 +173,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    marginBottom: 15,
+    marginTop: 10,
     backgroundColor: 'white',
   },
   uploadButton: {
     marginBottom: 15,
+    marginTop: 15,
   },
   imagePreview: {
     width: 120,
@@ -174,5 +186,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 10,
     marginBottom: 15,
+  },
+  errorText: {
+    color: 'red',
   },
 });
