@@ -66,9 +66,9 @@ function App() {
           },
         })}>
         <Tab.Screen name="Home" component={blogStack} />
-        <Tab.Screen name="Profile" component={SecondPage} />
-        <Tab.Screen name="camera" component={ImagePickerScreen} />
-        <Tab.Screen name="Shop" component={ProductListing} />
+        {/* <Tab.Screen name="Profile" component={SecondPage} /> */}
+        {/* <Tab.Screen name="camera" component={ImagePickerScreen} /> */}
+        {/* <Tab.Screen name="Shop" component={ProductListing} /> */}
         <Tab.Screen name="Add Blog" component={CreateBlog} />
       </Tab.Navigator>
     );
@@ -76,9 +76,7 @@ function App() {
 
   function MainApp() {
     return (
-      <NavBar>
         <MyTabs />
-      </NavBar>
     );
   }
 

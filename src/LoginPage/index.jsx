@@ -55,6 +55,7 @@ const Login = ({navigation}) => {
       <Text style={styles.subtitle}>Login to continue</Text>
 
       <View style={styles.card}>
+        
         <TextInput
           placeholder="Username"
           style={styles.input}

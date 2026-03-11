@@ -11,6 +11,7 @@ import {useQuery} from '@tanstack/react-query';
 import api from '../api/axiosIntance';
 import {useNavigation} from '@react-navigation/native';
 import {ActivityIndicator, Avatar} from 'react-native-paper';
+import Header from '../NavBar';
 
 const fetchBlogs = async () => {
   const response = await api.get('/blogs/list');
@@ -85,39 +86,41 @@ const FirstPage = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={data?.items}
-        renderItem={({item}) => (
-          <Item
-            blog={item}
-            onPress={() => navigation.navigate('blogDetails', {blog: item})}
-          />
-        )}
-        keyExtractor={item => item.id.toString()}
-        contentContainerStyle={{padding: 16}}
-        showsVerticalScrollIndicator={false}
-        refreshing={isFetching}
-        onRefresh={refetch}
-      />
-    </View>
+    <>
+      <Header heading={"Blogs"} isSearch/>
+      <View style={styles.container}>
+        <FlatList
+          data={data?.items}
+          renderItem={({item}) => (
+            <Item
+              blog={item}
+              onPress={() => navigation.navigate('blogDetails', {blog: item})}
+            />
+          )}
+          keyExtractor={item => item.id.toString()}
+          contentContainerStyle={{padding: 16}}
+          showsVerticalScrollIndicator={false}
+          refreshing={isFetching}
+          onRefresh={refetch}
+        />
+      </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  mainCardContainer:{
-    width:'100%',
-    backgroundColor:'#FAF9F6',
-    marginBottom:8,
+  mainCardContainer: {
+    width: '100%',
+    backgroundColor: '#FAF9F6',
+    marginBottom: 8,
   },
   authorImagContainer: {
     width: '100%',
     // backgroundColor: 'black',
-    height:50,
-    display:'flex',
-    justifyContent:'center',
-    paddingLeft:10,
-    
+    height: 50,
+    display: 'flex',
+    justifyContent: 'center',
+    paddingLeft: 10,
   },
   avatarContainer: {
     width: '20%',

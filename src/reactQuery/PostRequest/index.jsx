@@ -18,6 +18,7 @@ import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {useMutation} from '@tanstack/react-query';
 import {launchImageLibrary} from 'react-native-image-picker';
 import api from '../../api/axiosIntance';
+import Header from '../../NavBar';
 
 const CreateBlog = () => {
   const [title, setTitle] = useState('');
@@ -115,83 +116,86 @@ const CreateBlog = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.keyboardView}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.inner}>
-          <TextInput
-            placeholder="Title"
-            placeholderTextColor="#999"
-            style={styles.textInput}
-            value={title}
-            onChangeText={setTitle}
-          />
+    <>
+    <Header heading={'Create Blog'}/>
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
+          <View style={styles.inner}>
+            <TextInput
+              placeholder="Title"
+              placeholderTextColor="#999"
+              style={styles.textInput}
+              value={title}
+              onChangeText={setTitle}
+            />
 
-          <TextInput
-            placeholder="Content"
-            placeholderTextColor="#999"
-            style={[styles.textInput, styles.contentInput]}
-            multiline
-            value={content}
-            onChangeText={setContent}
-          />
+            <TextInput
+              placeholder="Content"
+              placeholderTextColor="#999"
+              style={[styles.textInput, styles.contentInput]}
+              multiline
+              value={content}
+              onChangeText={setContent}
+            />
 
-          {image ? (
-            <Surface style={styles.imagePreviewContainer} elevation={2}>
-              <Image source={{uri: image.uri}} style={styles.previewImage} />
-              <IconButton
-                icon="close-circle"
-                iconColor="#ff4444"
-                size={26}
-                style={styles.removeIcon}
-                onPress={handleRemoveImage}
-              />
-              <Text style={styles.imageFileName} numberOfLines={1}>
-                {image.fileName || 'Selected image'}
-              </Text>
-            </Surface>
-          ) : (
-            <TouchableOpacity
-              style={styles.uploadBox}
-              onPress={handlePickImage}
-              activeOpacity={0.7}>
-              <IconButton icon="image-plus" iconColor="#21005d" size={32} />
-              <Text style={styles.uploadText}>Tap to upload an image</Text>
-              <HelperText type="info" style={styles.helperText}>
-                JPG, PNG supported
-              </HelperText>
-            </TouchableOpacity>
-          )}
+            {image ? (
+              <Surface style={styles.imagePreviewContainer} elevation={2}>
+                <Image source={{uri: image.uri}} style={styles.previewImage} />
+                <IconButton
+                  icon="close-circle"
+                  iconColor="#ff4444"
+                  size={26}
+                  style={styles.removeIcon}
+                  onPress={handleRemoveImage}
+                />
+                <Text style={styles.imageFileName} numberOfLines={1}>
+                  {image.fileName || 'Selected image'}
+                </Text>
+              </Surface>
+            ) : (
+              <TouchableOpacity
+                style={styles.uploadBox}
+                onPress={handlePickImage}
+                activeOpacity={0.7}>
+                <IconButton icon="image-plus" iconColor="#21005d" size={32} />
+                <Text style={styles.uploadText}>Tap to upload an image</Text>
+                <HelperText type="info" style={styles.helperText}>
+                  JPG, PNG supported
+                </HelperText>
+              </TouchableOpacity>
+            )}
 
-          {image && (
+            {image && (
+              <Button
+                mode="outlined"
+                icon="image-edit"
+                textColor="#21005d"
+                style={styles.changeImageBtn}
+                onPress={handlePickImage}>
+                Change Image
+              </Button>
+            )}
+
             <Button
-              mode="outlined"
-              icon="image-edit"
-              textColor="#21005d"
-              style={styles.changeImageBtn}
-              onPress={handlePickImage}>
-              Change Image
+              onPress={handleCreateBlog}
+              disabled={isPending}
+              textColor="white"
+              buttonColor="#21005d"
+              mode="contained"
+              loading={isPending}
+              icon="send">
+              Submit
             </Button>
-          )}
-
-          <Button
-            onPress={handleCreateBlog}
-            disabled={isPending}
-            textColor="white"
-            buttonColor="#21005d"
-            mode="contained"
-            loading={isPending}
-            icon="send">
-            Submit
-          </Button>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </>
   );
 };
 

@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Image, Alert } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { TextInput, Button, Text } from 'react-native-paper';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { useMutation } from '@tanstack/react-query';
+import React, {useState} from 'react';
+import {View, StyleSheet, Image, Alert} from 'react-native';
+import {useForm, Controller} from 'react-hook-form';
+import {TextInput, Button, Text} from 'react-native-paper';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {useMutation} from '@tanstack/react-query';
 import api from '../api/axiosIntance';
+import Header from '../NavBar';
 
 const Registration = () => {
-  const { control, handleSubmit } = useForm();
+  const {control, handleSubmit} = useForm();
   const [image, setImage] = useState(null);
 
   // ✅ React Query Mutation
   const registerMutation = useMutation({
-    mutationFn: async (formData) => {
+    mutationFn: async formData => {
       const response = await api.post('/users/register', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -20,11 +21,11 @@ const Registration = () => {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       Alert.alert('Success', 'User Registered Successfully');
       console.log(data);
     },
-    onError: (error) => {
+    onError: error => {
       Alert.alert('Error', 'Registration Failed');
       console.log(error.response?.data);
     },
@@ -41,7 +42,7 @@ const Registration = () => {
     }
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = data => {
     const formData = new FormData();
 
     formData.append('username', data.username);
@@ -60,91 +61,91 @@ const Registration = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text variant="headlineMedium" style={styles.title}>
-        Register
-      </Text>
+    <>
+      <Header heading={'Register'} isBackBtn />
+      <View style={styles.container}>
+        {/* Username */}
+        <Controller
+          control={control}
+          name="username"
+          rules={{required: true}}
+          render={({field: {onChange, value}}) => (
+            <TextInput
+              label="Username"
+              activeOutlineColor="#21005d"
+              mode="outlined"
+              value={value}
+              onChangeText={onChange}
+              style={styles.input}
+            />
+          )}
+        />
 
-      {/* Username */}
-      <Controller
-        control={control}
-        name="username"
-        rules={{ required: true }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            label="Username"
-            activeOutlineColor='#21005d'
-            mode="outlined"
-            value={value}
-            onChangeText={onChange}
-            style={styles.input}
-          />
+        {/* Email */}
+        <Controller
+          control={control}
+          name="email"
+          rules={{
+            required: 'Email should contain @',
+            validate: value => value.include('@'),
+          }}
+          render={({field: {onChange, value}}) => (
+            <TextInput
+              label="Email"
+              mode="outlined"
+              activeOutlineColor="#21005d"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={value}
+              onChangeText={onChange}
+              style={styles.input}
+            />
+          )}
+        />
+
+        {/* Password */}
+        <Controller
+          control={control}
+          name="password"
+          rules={{required: true}}
+          render={({field: {onChange, value}}) => (
+            <TextInput
+              label="Password"
+              mode="outlined"
+              activeOutlineColor="#21005d"
+              secureTextEntry
+              value={value}
+              onChangeText={onChange}
+              style={styles.input}
+            />
+          )}
+        />
+
+        {/* Upload Button */}
+        <Button
+          mode="contained"
+          icon="camera"
+          onPress={pickImage}
+          style={styles.uploadButton}>
+          Upload Photo
+        </Button>
+
+        {image && (
+          <Image source={{uri: image.uri}} style={styles.imagePreview} />
         )}
-      />
 
-      {/* Email */}
-      <Controller
-        control={control}
-        name="email"
-        rules={{ required: true }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            label="Email"
-            mode="outlined"
-            activeOutlineColor='#21005d'
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={value}
-            onChangeText={onChange}
-            style={styles.input}
-          />
-        )}
-      />
-
-      {/* Password */}
-      <Controller
-        control={control}
-        name="password"
-        rules={{ required: true }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            label="Password"
-            mode="outlined"
-            activeOutlineColor='#21005d'
-            secureTextEntry
-            value={value}
-            onChangeText={onChange}
-            style={styles.input}
-          />
-        )}
-      />
-
-      {/* Upload Button */}
-      <Button
-        mode="contained"
-        icon="camera"
-        onPress={pickImage}
-        style={styles.uploadButton}
-      >
-        Upload Photo
-      </Button>
-
-      {image && (
-        <Image source={{ uri: image.uri }} style={styles.imagePreview} />
-      )}
-
-      {/* Submit */}
-      <Button
-        mode="contained"
-        onPress={handleSubmit(onSubmit)}
-        loading={registerMutation.isPending}
-        buttonColor='#21005d'
-        textColor='white'
-        disabled={registerMutation.isPending}
-      >
-        Register
-      </Button>
-    </View>
+        {/* Submit */}
+        <Button
+          mode="contained"
+          onPress={handleSubmit(onSubmit)}
+          loading={registerMutation.isPending}
+          buttonColor="#21005d"
+          textColor="white"
+          disabled={registerMutation.isPending}>
+          Register
+        </Button>
+      </View>
+    </>
   );
 };
 
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 15,
-    backgroundColor:'white'
+    backgroundColor: 'white',
   },
   uploadButton: {
     marginBottom: 15,
